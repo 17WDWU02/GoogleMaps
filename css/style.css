@@ -7,3 +7,16 @@
 	height: 100%;
 	width: 100%;
 }
+
+#MarkerToggle{
+	text-align: center;
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	z-index: 5;
+	background-color: rgba(0,0,0,0.5);
+}
+
+#MarkerToggle img{
+	max-width: 50px;
+}
