@@ -1,5 +1,5 @@
 var map, marker, infobox;
-
+var markers = [];
 var AllMarkers = [
 	{
 		lat: -41.292662,
@@ -117,7 +117,7 @@ function addAllMarkers(){
 			title: AllMarkers[i].title,
 			description: AllMarkers[i].description
 		})
-		
+		markers.push(marker);
 		Allinfobox(marker);
 	};
 }
@@ -135,8 +135,7 @@ function addSingleMaker(){
 		animation: google.maps.Animation.DROP,
 		icon: "images/icon.png",
 		title : "Yoobee School of Design",
-		description: "Description for Yoobee School of Design",
-		image: "yoobee.png"
+		description: "Description for Yoobee School of Design"
 	})
 }
 
@@ -174,8 +173,21 @@ function Allinfobox(marker){
 	});
 }
 
-
-
+var toggleMarkerOn = true;
+function toggleMarkers(){
+	for (var i = 0; i < markers.length; i++) {
+		if(toggleMarkerOn === true){
+			markers[i].setMap(null);
+		} else {
+			markers[i].setMap(map);
+		}
+	};
+	if(toggleMarkerOn === true){
+		toggleMarkerOn = false;
+	} else {
+		toggleMarkerOn = true;
+	}
+}
 
 
 
