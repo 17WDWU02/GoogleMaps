@@ -1,4 +1,4 @@
-var map, marker, infobox;
+var map, marker, infobox, userLocation, directionDisplay;
 var markers = [];
 var AllMarkers = [
 	{
@@ -38,8 +38,8 @@ function init(){
 	var mapOptions = {
 		//Set where the Map starts
 		center:{
-			lat: -41.295005,
-			lng: 174.78362
+			lat: -41.258166,
+			lng: 174.764943
 		},
 		//states what the initial zoom for the map is. 
 		zoom: 15,
@@ -88,14 +88,22 @@ function init(){
 				stylers: [
 					{ color: "#16a085"}
 				]
+			},
+			{
+				featureType: "poi",
+				stylers: [
+					{visibility: "off"}
+				]
 			}
 		]
 	}
 
 	map = new google.maps.Map(document.getElementById("map"), mapOptions);
+	FindUser();
 	// addSingleMaker();
 	addAllMarkers();
 	// marker.addListener("click", toggleBounce);
+	map.addListener("click", addMarker);
 	// infoBox();
 }
 
@@ -187,6 +195,65 @@ function toggleMarkers(){
 	} else {
 		toggleMarkerOn = true;
 	}
+}
+
+function FindUser(){
+
+	if(navigator.geolocation){
+		navigator.geolocation.getCurrentPosition(function(position){
+			userLocation = new google.maps.Marker({
+				position:{
+					lat: position.coords.latitude,
+					lng: position.coords.longitude
+				},
+				map: map,
+				animation: google.maps.Animation.DROP,
+				icon: "images/icon.png"
+			});
+			markers.push(userLocation);
+			map.panTo(userLocation.position);
+		})
+	}
+
+}
+var clickmarker;
+function addMarker(event){
+	if(clickmarker){
+		clickmarker.setMap(null);
+	}
+	var location = event.latLng;
+	clickmarker = new google.maps.Marker({
+		position: location,
+		map: map
+	});
+	markers.push(clickmarker);
+
+	showDirection(location);
+}
+
+function showDirection(location){
+	if(directionDisplay){
+		directionDisplay.setMap(null);
+	}
+
+	var directionService = new google.maps.DirectionsService();
+	directionDisplay = new google.maps.DirectionsRenderer();
+
+	directionDisplay.setMap(map);
+
+	directionService.route({
+		origin: userLocation.position,
+		destination: {location},
+		travelMode: google.maps.TravelMode.DRIVING,
+	}, function(response, status){
+		if(status == "OK"){
+			directionDisplay.setDirections(response);
+		} else if(status == "NOT_FOUND"){
+
+		} else if(status == "ZERO_RESULTS"){
+
+		}
+	});
 }
 
 
