@@ -1,5 +1,5 @@
 //Declare all of our Global variables for the project
-var map, marker, infobox, userLocation, directionDisplay, closestMarker, markers = [];
+var map, marker, infobox, userLocation, directionDisplay, closestMarker, markers = [], currentMarker, TransportMode = "DRIVING";
 //Here are our initial 5 markers which we want to show on the screen
 //The only thing which our markers definitly need is a lat and a lng
 var AllMarkers = [
@@ -154,7 +154,8 @@ function addAllMarkers(){
 		//Push each of those into that array
 		markers.push(marker);
 		//Link an infobox to this specific marker
-		Allinfobox(marker);
+		//This used to be AllInfoBox but since we are now adding more than one event when we click I have changed it to be named for all events
+		MarkerClickEvent(marker);
 	};
 }
 //Adding only 1 marker onto the page
@@ -202,16 +203,28 @@ function infoBox(){
 // a variable and calling it marker
 //This is for all the markers to have infowindows.
 //We also check to see if one is already open and if it is then we close it before creating a new one
-function Allinfobox(marker){
+
+//This used to be called AllInfoBox but now more than just the info box happens
+function MarkerClickEvent(marker){
+	//if the infobox is already open then close it
 	if(infobox){
 		infobox.close();
 	}
+	//create new instance of infowindow from google
 	infobox = new google.maps.InfoWindow();
+	//Add a click event to the marker which you are currently clicking on
 	google.maps.event.addListener(marker, "click", function(){
+		//Set the content of the infobox
 		infobox.setContent("<div><strong>"+marker.title+"</strong></div><hr>"+
 							"<div>"+marker.description+"</div>"
 			);
+		//open the infobox on the map at the position of the marker.
+		//What .open needs is what map you want it on and also what marker you want it on
 		infobox.open(map, marker);
+		//Change the current marker to the one which you are clicking on
+		currentMarker = marker;
+		//Show directions to the new marker you hav clicked on using the transport mode which is currently selected
+		showDirection(currentMarker.position, TransportMode);
 	});
 }
 
@@ -260,7 +273,7 @@ function FindUser(){
 			//Find the closest marker to the user
 			FindClosestMarker();
 			//Show the directions to that marker that the user can walk to
-			showDirection(closestMarker.position, "WALKING");
+			showDirection(closestMarker.position, TransportMode);
 		})
 	} else{
 
@@ -286,7 +299,7 @@ function addMarker(event){
 	//add the new marker into the markers array
 	markers.push(clickmarker);
 	//show the direction to this marker that the user can drive to
-	showDirection(location, "DRIVING");
+	showDirection(location, TransportMode);
 }
 
 //Create a direction line to where the user needs to go from their current location
@@ -351,6 +364,33 @@ function FindClosestMarker(){
 			//Closest marker then becomes that marker
 			closestMarker = SingleMarker;
 		}
+		currentMarker = closestMarker;
 		//This will run for all of your markers on the page so closestMarker/cloesetDistance might change a few times in the loop
 	};
 }
+
+//This Function gets called with the onchange event on the select option  within the html
+// what gets passed through it is the value of whatever is the current option shown in the select
+function changeTransport(mode){
+	//TransportMode is a new global variable which sets what is the current mode shown on the select
+	TransportMode = mode;
+	//showDirection needs 2 values, the end position and the transport mode.
+	//currentMarker is another new global variable which is defined by the marker you are currently clicked on
+	//When the page loads current marker becomes the closest marker because that is the one we have coded to show us the direction to by default
+	//When you click on a new marker, that marker becomes the currnet marker
+	showDirection(currentMarker.position, TransportMode);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -8,7 +8,16 @@
 	
 	<div id="MarkerToggle">
 		<img src="images/icon.png"><br>
-		<button onclick="toggleMarkers();">Toggle Markers</button>
+		<button onclick="toggleMarkers();">Toggle Markers</button><br>
+	</div>
+	<div id="TransportMode">
+		<label>Transport Mode</label>
+		<select onchange="changeTransport(this.value);">
+			<option value="DRIVING">Driving</option>
+			<option value="WALKING">Walking</option>
+			<option value="BICYCLING">Bicycling</option>
+			<option value="TRANSIT">Transit</option>
+		</select>
 	</div>
 	
 
